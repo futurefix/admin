@@ -78,7 +78,7 @@
 
 <script>
 async function loadInvestments(){
-  const res = await fetch("http://localhost:5000/admin/investments/last24h");
+  const res = await fetch("https://backend-arre.onrender.com/admin/investments/last24h");
   const data = await res.json();
   const tbody = document.getElementById("investmentRows");
   tbody.innerHTML = "";
@@ -115,7 +115,7 @@ async function loadInvestments(){
 
 // ✅ Approve investment function
 async function approveInvestment(id){
-  const res = await fetch(`http://localhost:5000/admin/approve-investment/${id}`, {
+  const res = await fetch(`https://backend-arre.onrender.com/admin/approve-investment/${id}`, {
     method: "POST"
   });
   const data = await res.json();
@@ -137,3 +137,4 @@ loadInvestments();
 </script>
 </body>
 </html>
+

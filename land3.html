@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Land 3-Year Plan Investors</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Land 3-Year Plan Investors</h2>
+  <p id="totalUsers" style="font-weight:bold; color:#4f46e5; margin-bottom:10px;"></p>
+  <input type="text" id="searchBar" placeholder="Search by Aadhaar number">
+  <div id="users"></div>
+
+  <script>
+    let allUsers = []; // store fetched users
+
+    async function loadUsers() {
+  const res = await fetch("http://localhost:5000/admin/plan/land3");
+  const data = await res.json();
+
+  if (data.success) {
+    allUsers = data.users;
+
+    // Show total users
+    document.getElementById("totalUsers").innerText = `Total Investors: ${allUsers.length}`;
+
+    renderUsers(allUsers);
+  }
+}
+
+
+    function renderUsers(users) {
+      let html = "";
+      users.forEach(user => {
+        user.investments.forEach(inv => {
+           html += `
+            <div class="card" id="user-${user.aadhaar}">
+              <button class="printBtn" onclick="printUser('user-${user.aadhaar}')">Print</button>
+              <div class="aadhaar-photos">
+              <div>
+              <h3>${user.name} (${user.aadhaar})</h3>
+              <p><span class="label">Full Name:</span> ${user.fullName}</p>
+              <p><span class="label">Phone:</span> ${user.phone}</p>
+              <p><span class="label">Address:</span> ${user.email}</p>
+              <p><span class="label">Secret ID:</span> ${user.aadhaar}</p>
+              <p><span class="label">Referral Code:</span> ${user.referralCode}</p>
+              <strong>Invests Date:</strong> ${new Date(inv.date).toLocaleString()}<br>
+              </div>
+              <div>
+              <p><span class="label">Plan:</span> ${inv.plan}</p>
+              <p><span class="label">Invest Amount:</span> ${inv.amount}</p>
+              <p><span class="label">Status:</span> ${inv.status}</p>
+              <p><span class="label">Locked:</span> ${inv.locked}</p>
+              <p><span class="label">Profit:</span> ₹${inv.profit}</p>
+              
+              <strong>Unlock Date:</strong> ${new Date(inv.unlockDate).toLocaleString()}<br>
+              </div>
+              </div>
+
+              
+             <div class="aadhaar-photos">
+               <div>
+                 <p class="label">Aadhaar Front:</p>
+                 <img src="${inv.frontImg}" alt="Aadhaar Front">
+               </div>
+               <div>
+                 <p class="label">Aadhaar Back:</p>
+                 <img src="${inv.backImg}" alt="Aadhaar Back">
+                </div>
+          </div>
+            </div>
+          `;
+        });
+      });
+
+      document.getElementById("users").innerHTML = html || "<p>No users found.</p>";
+    }
+
+    // Search functionality
+    document.getElementById("searchBar").addEventListener("input", (e) => {
+      const query = e.target.value.trim();
+      if (!query) {
+        renderUsers(allUsers);
+        return;
+      }
+      const filtered = allUsers.filter(user => user.aadhaar.includes(query));
+      renderUsers(filtered);
+    });
+
+    // Print single user
+    function printUser(userId) {
+      const userCard = document.getElementById(userId).innerHTML;
+      const originalContents = document.body.innerHTML;
+
+      document.body.innerHTML = userCard;
+      window.print();
+      document.body.innerHTML = originalContents;
+      loadUsers(); // reload to restore scripts and events
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

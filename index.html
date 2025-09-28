@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Link</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .user-box {
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .user-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .user-box:hover::before {
+      left: 100%;
+    }
+
+    .user-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 1);
+      border-color: #667eea;
+    }
+
+    .user-box h3 {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0;
+      color: #555;
+      transition: color 0.3s ease;
+    }
+
+    .user-box:hover h3 {
+      color: #667eea;
+    }
+
+    /* Special styling for multi-link box (referral) */
+    .multi-link .user-box h3 {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .multi-link .user-box h3:last-child {
+      margin-bottom: 0;
+    }
+
+    .parent {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 15px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .div1 {
+      grid-column: 1;
+      grid-row: 6;
+    }
+
+    .div2 {
+      grid-column: 2;
+      grid-row: 6;
+    }
+
+    .div3 {
+      grid-column: 3;
+      grid-row: 6;
+    }
+
+    .div4 {
+      grid-column: 4;
+      grid-row: 6;
+    }
+
+    .div5 {
+      grid-column: 5;
+      grid-row: 6;
+    }
+
+    .div6 {
+      grid-column: 6;
+      grid-row: 6;
+    }
+
+    .div7 {
+      grid-column: 1;
+      grid-row: 7;
+    }
+
+    .div8 {
+      grid-column: 2;
+      grid-row: 7;
+    }
+
+    .div9 {
+      grid-column: 3;
+      grid-row: 7;
+    }
+
+    .div10 {
+      grid-column: 4;
+      grid-row: 7;
+    }
+
+    .div11 {
+      grid-column: 5;
+      grid-row: 7;
+    }
+
+    .div12 {
+      grid-column: 6;
+      grid-row: 7;
+    }
+
+    .div13 {
+      grid-column: 1 / span 4;
+      grid-row: 1 / span 3;
+    }
+
+    .div14 {
+      grid-column: 5 / span 2;
+      grid-row: 1 / span 3;
+    }
+
+    .div15 {
+      grid-column: 5 / span 2;
+      grid-row: 4 / span 2;
+    }
+
+    .div16 {
+      grid-column: 1 / span 4;
+      grid-row: 4 / span 2;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .parent {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(8, auto);
+        gap: 12px;
+      }
+      
+      .div13 {
+        grid-column: 1 / -1;
+        grid-row: 1;
+      }
+
+      .div14 {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .div15 {
+        grid-column: 1 / -1;
+        grid-row: 3;
+      }
+
+      .div16 {
+        grid-column: 1 / -1;
+        grid-row: 4;
+      }
+
+      .div1 {
+        grid-column: 1;
+        grid-row: 5;
+      }
+
+      .div2 {
+        grid-column: 2;
+        grid-row: 5;
+      }
+
+      .div3 {
+        grid-column: 3;
+        grid-row: 5;
+      }
+
+      .div4 {
+        grid-column: 1;
+        grid-row: 6;
+      }
+
+      .div5 {
+        grid-column: 2;
+        grid-row: 6;
+      }
+
+      .div6 {
+        grid-column: 3;
+        grid-row: 6;
+      }
+
+      .div7 {
+        grid-column: 1;
+        grid-row: 7;
+      }
+
+      .div8 {
+        grid-column: 2;
+        grid-row: 7;
+      }
+
+      .div9 {
+        grid-column: 3;
+        grid-row: 7;
+      }
+
+      .div10 {
+        grid-column: 1;
+        grid-row: 8;
+      }
+
+      .div11 {
+        grid-column: 2;
+        grid-row: 8;
+      }
+
+      .div12 {
+        grid-column: 3;
+        grid-row: 8;
+      }
+
+      .user-box {
+        padding: 15px;
+      }
+
+      .user-box h3 {
+        font-size: 14px;
+      }
+
+      .multi-link .user-box h3 {
+        font-size: 13px;
+      }
+    }
+
+    /* Larger screens */
+    @media (min-width: 1200px) {
+      .parent {
+        gap: 20px;
+      }
+
+      .user-box {
+        padding: 25px;
+      }
+
+      .user-box h3 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="parent">
+    <div class="div13"><a href="user.html"><div class="user-box"><h3>For User Profit</h3></div></a></div>
+    
+    <div class="div14">
+      <div class="user-box">
+        <a href="last24h.html"><h3>Last 24 hours</h3></a>
+      </div>
+    </div>
+    
+    <div class="div15" class="multi-link">
+      <div class="user-box">
+        <a href="whitdrawreferral.html"><h3>Referral Withdraw Requests</h3></a>
+        </div><br>
+        <div class="user-box">
+        <a href="referralearning.html"><h3>Pending Referral Approvals</h3></a>
+      </div>
+    </div>
+    
+    <div class="div16"><a href="yearprofit.html"><div class="user-box"><h3>For Plan Profit</h3></div></a></div>
+    
+    <div class="div1"><a href="1yearplan.html"><div class="user-box"><h3>Plan 1 year user</h3></div></a></div>
+    <div class="div2"><a href="2yearplan.htm"><div class="user-box"><h3>Plan 2 year user</h3></div></a></div>
+    <div class="div3"><a href="3yearplan.html"><div class="user-box"><h3>Plan 3 year user</h3></div></a></div>
+    <div class="div4"><a href="flat3year.html"><div class="user-box"><h3>Plan Flat 3 year user</h3></div></a></div>
+    <div class="div5"><a href="flag 4 year.html"><div class="user-box"><h3>Plan Flat 4 year user</h3></div></a></div>
+    <div class="div6"><a href="flat5.html"><div class="user-box"><h3>Plan Flat 5 user</h3></div></a></div>
+    <div class="div7"><a href="home3.html"><div class="user-box"><h3>Plan Home 3 user</h3></div></a></div>
+    <div class="div8"><a href="home4.html"><div class="user-box"><h3>Plan Home 4 year</h3></div></a></div>
+    <div class="div9"><a href="home5.html"><div class="user-box"><h3>Plan Home 5 year</h3></div></a></div>
+    <div class="div10"><a href="land3.html"><div class="user-box"><h3>Plan Land 3 year</h3></div></a></div>
+    <div class="div11"><a href="land4.html"><div class="user-box"><h3>Plan Land 4 year</h3></div></a></div>
+    <div class="div12"><a href="land5.html"><div class="user-box"><h3>Plan Land 5 year</h3></div></a></div>
+  </div>
+  
+</body>
+</html>

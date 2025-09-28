@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Referral Withdraw Requests — Admin</title>
+<style>
+  body { 
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif; 
+    margin: 20px; 
+    background: #f5f7fa; 
+    color: #222; 
+  }
+  h1 { 
+    margin-bottom: 8px; 
+    font-size: 1.8rem; 
+    color: #333; 
+  }
+  .small { font-size:0.9rem; color:#666; }
+
+  .card { 
+    background:#fff; 
+    border-radius:12px; 
+    padding:16px 20px; 
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06); 
+    border:1px solid #e0e6ed; 
+  }
+
+  .list { 
+    max-height:70vh; 
+    overflow:auto; 
+    padding-right:8px; 
+  }
+
+  .request { 
+    background:#fafbfc; 
+    border:1px solid #e3e9ef; 
+    padding:14px 16px; 
+    border-radius:10px; 
+    margin-bottom:12px; 
+    transition: all 0.2s ease; 
+  }
+  .request:hover { 
+    background:#f0f4f9; 
+    border-color:#cfd8e3; 
+  }
+
+  .muted { color:#666; font-size:0.9rem; }
+
+  .row { 
+    display:flex; 
+    gap:10px; 
+    flex-wrap:wrap; 
+    margin-top:12px; 
+  }
+
+  button { 
+    padding:8px 14px; 
+    border-radius:8px; 
+    border:none; 
+    cursor:pointer; 
+    font-size:0.95rem; 
+    font-weight:500; 
+    transition: all 0.2s ease; 
+  }
+  button.primary { 
+    background:#4f46e5; 
+    color:#fff; 
+  }
+  button.primary:hover { 
+    background:#3730a3; 
+  }
+  button.danger { 
+    background:#e11d48; 
+    color:#fff; 
+  }
+  button.danger:hover { 
+    background:#9f1239; 
+  }
+
+  /* scrollbar styling */
+  .list::-webkit-scrollbar { width:8px; }
+  .list::-webkit-scrollbar-thumb { background:#c1c9d6; border-radius:10px; }
+  .list::-webkit-scrollbar-thumb:hover { background:#a0aec0; }
+</style>
+</head>
+<body>
+
+<h1>Referral Withdraw Requests</h1>
+<p class="small">Manage user referral withdrawal requests here.</p>
+
+<div class="card">
+  <div id="withdrawRequests" class="list"></div>
+  <div style="margin-top:12px;">
+    <button class="primary" onclick="loadWithdrawRequests()">🔄 Refresh Requests</button>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000';
+
+// helper to create elements
+function create(tag, props = {}, children = []) {
+  const d = document.createElement(tag);
+  Object.assign(d, props);
+  (Array.isArray(children) ? children : [children]).forEach(c => {
+    if (typeof c === 'string') d.appendChild(document.createTextNode(c));
+    else if (c) d.appendChild(c);
+  });
+  return d;
+}
+
+async function loadWithdrawRequests() {
+  const cont = document.getElementById('withdrawRequests');
+  cont.innerHTML = '<p class="muted">Loading requests…</p>';
+  try {
+    const res = await fetch(`${API}/admin/withdraws`);
+    const json = await res.json();
+    if(!json.success || !json.requests.length) {
+      cont.innerHTML = `<p class="muted">No withdraw requests</p>`;
+      return;
+    }
+
+    cont.innerHTML = '';
+    json.requests.forEach(r => {
+      const block = create('div', { className:'request' }, [
+        create('div', {}, `👤 User: ${r.userId?.name || '—'} (${r.userId?.email || '—'})  `),
+        create('div', { className:'small muted' }, `📞 Phone: ${r.userId?.phone || '—'}`),
+        create('div', { className:'small muted' }, `💰 Amount: ₹${r.amount}`),
+        create('div', { className:'small muted' }, `🕒 Requested: ${new Date(r.createdAt).toLocaleString()}`),
+        create('div', { className:'small muted' }, `💳 UPI: ${r.upi || '-'}`),
+        create('div', { className:'small muted' }, `🏦 Bank: ${r.bankAccount || '-'} | IFSC: ${r.ifsc || '-'}`),
+        create('div', { className:'small muted' }, `📌 Status: ${r.status}`)
+      ]);
+
+      if(r.status === 'Pending'){
+        const btnApprove = create('button', { innerText:'Approve ✅', className:'primary', onclick:()=>updateWithdrawRequest(r._id,'Approved') });
+        const btnReject = create('button', { innerText:'Reject ❌', className:'danger', onclick:()=>updateWithdrawRequest(r._id,'Rejected') });
+        const row = create('div', { className:'row' }, [btnApprove, btnReject]);
+        block.appendChild(row);
+      }
+
+      cont.appendChild(block);
+    });
+  } catch(err) {
+    console.error(err);
+    cont.innerHTML = '<p class="muted">Error loading requests</p>';
+  }
+}
+
+async function updateWithdrawRequest(id, status) {
+  try {
+    const res = await fetch(`${API}/admin/withdraws/${id}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ status })
+    });
+    const json = await res.json();
+    alert(json.message || 'Updated');
+    loadWithdrawRequests();
+  } catch(e){ console.error(e); alert('Error'); }
+}
+
+// initial load
+loadWithdrawRequests();
+setInterval(loadWithdrawRequests, 10000);
+</script>
+
+</body>
+</html>

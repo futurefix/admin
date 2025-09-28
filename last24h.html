@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Last 24h Pending Investments</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f9fafb;
+    margin: 0;
+    padding: 20px;
+  }
+  h2 {
+    margin-bottom: 16px;
+    color: #111827;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 14px;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: 600;
+  }
+  tr:hover {
+    background: #f9fafc;
+  }
+  .status {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .Pending { background: #fef3c7; color: #92400e; }
+
+  .approve-btn {
+    background: #4f46e5;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  .approve-btn:hover {
+    background: #3730a3;
+  }
+</style>
+</head>
+<body>
+  <h2>Pending Investments (Last 24 Hours)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Secret no.</th>
+        <th>Plan</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Profit</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="investmentRows"></tbody>
+  </table>
+
+<script>
+async function loadInvestments(){
+  const res = await fetch("http://localhost:5000/admin/investments/last24h");
+  const data = await res.json();
+  const tbody = document.getElementById("investmentRows");
+  tbody.innerHTML = "";
+
+  if(data.success && data.users.length){
+    data.users.forEach(user => {
+      user.investments
+        .filter(inv => inv.status === "Pending") // ✅ only pending
+        .forEach(inv => {
+          const tr = document.createElement("tr");
+          tr.id = `row-${inv._id}`;
+
+          tr.innerHTML = `
+            <td>${user.name}</td>
+            <td>${user.aadhaar}</td>
+            <td>${inv.plan}</td>
+            <td>₹${inv.amount}</td>
+            <td>
+              <span class="status Pending">${inv.status}</span>
+              
+            </td>
+            <td>₹${inv.profit}</td>
+            <td>${new Date(inv.date).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+    });
+  }
+
+  if(!tbody.innerHTML){
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#6b7280;">No pending investments 🎉</td></tr>`;
+  }
+}
+
+// ✅ Approve investment function
+async function approveInvestment(id){
+  const res = await fetch(`http://localhost:5000/admin/approve-investment/${id}`, {
+    method: "POST"
+  });
+  const data = await res.json();
+
+  if(data.success){
+    // Remove row from frontend once approved
+    document.getElementById(`row-${id}`).remove();
+
+    // If no rows left, show message
+    if(document.getElementById("investmentRows").children.length === 0){
+      document.getElementById("investmentRows").innerHTML = `<tr><td colspan="7" style="text-align:center; color:#6b7280;">No pending investments 🎉</td></tr>`;
+    }
+  } else {
+    alert("Error: " + data.message);
+  }
+}
+
+loadInvestments();
+</script>
+</body>
+</html>

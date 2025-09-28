@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Referral Approvals</title>
+<style>
+  body { 
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif; 
+    padding: 20px; 
+    background: #f3f4f6; 
+    color:#222;
+  }
+  h2 { 
+    font-size: 1.6rem; 
+    margin-bottom: 16px; 
+    color:#111827; 
+  }
+  
+  .referral-card { 
+    border: 1px solid #e5e7eb; 
+    padding: 16px; 
+    margin-bottom: 14px; 
+    border-radius: 12px; 
+    background: #fff; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    transition: transform 0.2s, box-shadow 0.2s; 
+  }
+  .referral-card:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08); 
+  }
+
+  p { margin: 6px 0; font-size:0.95rem; }
+  strong { color:#374151; }
+
+  .badge {
+    display:inline-block;
+    background:#e0e7ff;
+    color:#4338ca;
+    font-size:0.8rem;
+    padding:2px 8px;
+    border-radius:6px;
+    margin-left:6px;
+  }
+
+  button { 
+    padding: 8px 14px; 
+    background: #4f46e5; 
+    color: #fff; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  button:hover { 
+    background: #3730a3; 
+    transform: scale(1.03);
+  }
+
+  .empty { 
+    color:#6b7280; 
+    font-style:italic; 
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+  <h2>Pending Referral Approvals</h2>
+  <div id="referrals"></div>
+
+<script>
+async function loadReferrals(){
+  const res = await fetch("http://localhost:5000/admin/referrals");
+  const data = await res.json();
+  const container = document.getElementById("referrals");
+  container.innerHTML = "";
+
+  if(data.success && data.users.length){
+    data.users.forEach(user => {
+      const div = document.createElement("div");
+      div.className = "referral-card";
+      
+      div.innerHTML = `
+        <h3>${user.name} (${user.aadhaar})</h3>
+        <p><strong>Name:</strong> ${user.name} <span class="badge">New</span></p>
+        <p><strong>Old Referral Used:</strong> ${user.referredBy || '—'}</p>
+        <p><strong>New User's Referral Code:</strong> ${user.referralCode}</p>
+        <button id="btn-${user._id}" onclick="approveReferral('${user._id}')">✅ Approve & Credit ₹50</button>
+
+      `;
+
+      container.appendChild(div);
+    });
+  } else {
+    container.innerHTML = `<p class="empty">No pending referrals 🎉</p>`;
+  }
+}
+
+async function approveReferral(id){
+  const res = await fetch(`http://localhost:5000/admin/approve-referral/${id}`, {
+    method: "POST"
+  });
+  const data = await res.json();
+  alert(data.message);
+
+  if(data.success){
+    // Hide the button after approval
+    document.getElementById(`btn-${id}`).style.display = "none";
+  }
+}
+
+// Initial load
+loadReferrals();
+</script>
+</body>
+</html>

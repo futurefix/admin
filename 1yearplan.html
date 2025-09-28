@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>1-Year Plan Users</title>
+  <style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f3f4f6;
+    padding: 20px;
+    margin: 0;
+    color: #333;
+  }
+
+  h2 {
+    margin-bottom: 15px;
+    color: #4f46e5;
+  }
+
+  #searchBar {
+    width: 100%;
+    max-width: 350px;
+    height: 38px;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+
+  #searchBar:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 6px rgba(79,70,229,0.3);
+  }
+
+  .card {
+    background: #fff;
+    padding: 18px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    position: relative;
+    transition: transform 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  .card h3 {
+    margin: 0 0 10px;
+    color: #1f2937;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #374151;
+  }
+
+  .aadhaar-photos {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+  }
+
+  .aadhaar-photos div {
+    flex: 1;
+  }
+
+  .aadhaar-photos img {
+    width: 100%;
+    max-width: 160px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .aadhaar-photos img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .printBtn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #10b981;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+
+  .printBtn:hover {
+    background: #059669;
+  }
+</style>
+
+</head>
+<body>
+  <h2>1-Year Plan Investors</h2>
+<p id="totalUsers" style="font-weight:bold; color:#4f46e5; margin-bottom:10px;"></p>
+<input type="text" id="searchBar" placeholder="Search by Aadhaar number">
+<div id="users"></div>
+
+
+  <script>
+    let allUsers = []; // store fetched users
+
+    async function loadUsers() {
+  const res = await fetch("http://localhost:5000/admin/plan/1year");
+  const data = await res.json();
+
+  if (data.success) {
+    allUsers = data.users;
+
+    // Show total users
+    document.getElementById("totalUsers").innerText = `Total Investors: ${allUsers.length}`;
+
+    renderUsers(allUsers);
+  }
+}
+
+
+    function renderUsers(users) {
+  let html = "";
+  users.forEach(user => {
+    user.investments.forEach(inv => {
+      html += `
+            <div class="card" id="user-${user.aadhaar}">
+              <button class="printBtn" onclick="printUser('user-${user.aadhaar}')">Print</button>
+              <div class="aadhaar-photos">
+              <div>
+              <h3>${user.name} (${user.aadhaar})</h3>
+              <p><span class="label">Full Name:</span> ${user.fullName}</p>
+              <p><span class="label">Phone:</span> ${user.phone}</p>
+              <p><span class="label">Address:</span> ${user.email}</p>
+              <p><span class="label">Secret ID:</span> ${user.aadhaar}</p>
+              <p><span class="label">Referral Code:</span> ${user.referralCode}</p>
+              <strong>Invests Date:</strong> ${new Date(inv.date).toLocaleString()}<br>
+              </div>
+              <div>
+              <p><span class="label">Plan:</span> ${inv.plan}</p>
+              <p><span class="label">Invest Amount:</span> ${inv.amount}</p>
+              <p><span class="label">Status:</span> ${inv.status}</p>
+              <p><span class="label">Locked:</span> ${inv.locked}</p>
+              <p><span class="label">Profit:</span> ₹${inv.profit}</p>
+              
+              <strong>Unlock Date:</strong> ${new Date(inv.unlockDate).toLocaleString()}<br>
+              </div>
+              </div>
+
+              
+             <div class="aadhaar-photos">
+               <div>
+                 <p class="label">Aadhaar Front:</p>
+                 <img src="${inv.frontImg}" alt="Aadhaar Front">
+               </div>
+               <div>
+                 <p class="label">Aadhaar Back:</p>
+                 <img src="${inv.backImg}" alt="Aadhaar Back">
+                </div>
+          </div>
+            </div>
+          `;
+        });
+      });
+
+  document.getElementById("users").innerHTML = html || "<p>No users found.</p>";
+}
+
+
+    // Search functionality
+    document.getElementById("searchBar").addEventListener("input", (e) => {
+      const query = e.target.value.trim();
+      if (!query) {
+        renderUsers(allUsers);
+        return;
+      }
+      const filtered = allUsers.filter(user => user.aadhaar.includes(query));
+      renderUsers(filtered);
+    });
+
+    // Print single user
+    function printUser(userId) {
+      const userCard = document.getElementById(userId).innerHTML;
+      const originalContents = document.body.innerHTML;
+
+      document.body.innerHTML = userCard;
+      window.print();
+      document.body.innerHTML = originalContents;
+      loadUsers(); // reload to restore scripts and events
+    }
+
+    loadUsers();
+  </script>
+</body>
+</html>

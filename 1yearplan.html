@@ -113,7 +113,7 @@
     let allUsers = []; // store fetched users
 
     async function loadUsers() {
-  const res = await fetch("http://localhost:5000/admin/plan/1year");
+  const res = await fetch("https://backend-arre.onrender.com/admin/plan/1year");
   const data = await res.json();
 
   if (data.success) {
@@ -201,3 +201,4 @@
   </script>
 </body>
 </html>
+

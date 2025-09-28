@@ -124,7 +124,7 @@ let editedProfits = {};
 let allUsers = []; // store all users globally
 
 async function loadInvestments() {
-  const res = await fetch('http://localhost:5000/admin/investments');
+  const res = await fetch('https://backend-arre.onrender.com/admin/investments');
   const data = await res.json();
   if (data.success) {
     allUsers = data.users; // save users globally
@@ -188,7 +188,7 @@ document.getElementById('searchBar').addEventListener('input', function() {
 });
 
 async function updateStatus(aadhaar, index, status) {
-  await fetch('http://localhost:5000/admin/update-investment', {
+  await fetch('https://backend-arre.onrender.com/admin/update-investment', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({aadhaar, investmentIndex:index, status})
@@ -204,7 +204,7 @@ function markProfitEdited(aadhaar, index, value) {
 async function approveProfit(aadhaar, index) {
   const key = `${aadhaar}_${index}`;
   if (editedProfits[key] != null) {
-    await fetch('http://localhost:5000/admin/update-investment', {
+    await fetch('https://backend-arre.onrender.com/admin/update-investment', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({aadhaar, investmentIndex:index, profit:editedProfits[key]})
@@ -219,7 +219,7 @@ async function approveProfit(aadhaar, index) {
 }
 
 async function updateLock(aadhaar, index, locked) {
-  await fetch('http://localhost:5000/admin/update-investment', {
+  await fetch('https://backend-arre.onrender.com/admin/update-investment', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({aadhaar, investmentIndex:index, locked})
@@ -230,3 +230,4 @@ loadInvestments();
 </script>
 </body>
 </html>
+

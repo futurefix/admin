@@ -15,7 +15,7 @@
     let allUsers = [];
 
     async function loadUsers() {
-  const res = await fetch("http://localhost:5000/admin/plan/flat4");
+  const res = await fetch("https://backend-arre.onrender.com/admin/plan/flat4");
   const data = await res.json();
 
   if (data.success) {
@@ -99,3 +99,4 @@
   </script>
 </body>
 </html>
+

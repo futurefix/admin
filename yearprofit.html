@@ -73,7 +73,7 @@
 
 <script>
 async function loadPlans(){
-  const res = await fetch('http://localhost:5000/admin/plans');
+  const res = await fetch('https://backend-arre.onrender.com/admin/plans');
   const data = await res.json();
 
   let html = '';
@@ -96,7 +96,7 @@ async function loadPlans(){
 
 async function updatePlan(name){
   const value = document.getElementById(`profit-${name}`).value;
-  const res = await fetch('http://localhost:5000/admin/update-plan', {
+  const res = await fetch('https://backend-arre.onrender.com/admin/update-plan', {
     method: 'POST',
     headers: { 'Content-Type':'application/json' },
     body: JSON.stringify({ name, profitPercentage: parseFloat(value) })
@@ -112,3 +112,4 @@ loadPlans();
 </script>
 </body>
 </html>
+
